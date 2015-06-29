@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2015-6-28 21:38:07 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.tq.entity.Payment" table="PAYMENT">
+        <id name="id" type="java.lang.Integer">
+            <column name="ID" />
+            <generator class="native" />
+        </id>
+        <property name="payMonth" type="java.lang.String">
+            <column name="PAYMONTH" />
+        </property>
+        <property name="amount" type="double">
+            <column name="AMOUNT" />
+        </property>
+        <many-to-one name="employee" class="com.tq.entity.Employee" fetch="join">
+            <column name="EMPLOYEE" />
+        </many-to-one>
+    </class>
+</hibernate-mapping>

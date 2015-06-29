@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:c="http://www.springframewordk.org/schema/c"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+	<bean name="datasource" class="org.springframework.jndi.JndiObjectFactoryBean"
+	p:jndiName="java:comp/env/jdbc/mysql"/>
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean"
+    p:dataSource-ref="dataSource">
+    	<property name="mappingResources">
+    		<list>
+    			<value>com/tq/entity/Application.hbm.xml</value>
+    			<value>com/tq/entity/Attend.hbm.xml</value>
+    			<value>com/tq/entity/AttendType.hbm.xml</value>
+    			<value>com/tq/entity/CheckBack.hbm.xml</value>
+    			<value>com/tq/entity/Employee.hbm.xml</value>
+    			<value>com/tq/entity/Manager.hbm.xml</value>
+    			<value>com/tq/entity/Payment.hbm.xml</value>
+    		</list>
+    	</property>
+    	<!-- 定义hibernate sessionFactory的属性 -->
+    	<property name="hibernateProperties">
+    		<props>
+    		<!-- 定义数据库方言 -->
+    			<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+    			<prop key="hibernate.hbm2ddl.auto">update</prop>
+    			<prop key="hibernate.show_sql">true</prop>
+    			<prop key="hibernate.format_sql">true</prop>
+    			<prop key="hibernate.current_session_context_class">thread</prop>
+    		</props>
+    	</property>
+    </bean>
+    
+    <bean id="employeeDao" class="com.tq.dao.impl.EmployeeDAOImpl"
+		p:sessionFactory-ref="sessionFactory"/>
+    <bean id="managerDao" class="com.tq.dao.impl.ManagerDAOImpl"
+		p:sessionFactory-ref="sessionFactory"/>
+	<bean id="paymentDao" class="com.tq.dao.impl.PaymentDAOImpl"
+		p:sessionFactory-ref="sessionFactory"/>
+	<bean id="checkbackDao" class="com.tq.dao.impl.CheckBackDAOImpl"
+		p:sessionFactory-ref="sessionFactory"/>
+	<bean id="attendDao" class="com.tq.dao.impl.AttendDAOImpl"
+		p:sessionFactory-ref="sessionFactory"/>
+	<bean id="attendTypeDao" class="com.tq.dao.impl.AttendTypeDAOImpl"
+		p:sessionFactory-ref="sessionFactory"/>
+	<bean id="applicationDao" class="com.tq.dao.impl.ApplicationDAOImpl"	
+		p:sessionFactory-ref="sessionFactory"/>
+		
+	<!-- service bean -->
+	<bean abstract="true" id="abstract" lazy-init="true" 
+	p:appDao-ref="applicationDao"
+	p:attendDao-ref="attendDao"
+	p:typeDao-ref="attendTypeDao"
+	p:checkDao-ref="checkbackDao"
+	p:empDao-ref="employeeDao"
+	p:mgrDao-ref="managerDao"
+	p:payDao-ref="paymentDao"
+	/>	
+	<bean id="empManager" class="com.tq.service.impl.EmpManagerImpl" parent="abstract"/>
+	<bean id="mgrManager" class="com.tq.service.impl.MgrManagerImpl" parent="abstract"/>	
+	<!-- 配置hibernate的局部事务管理器，使用hibernateTransactionManager类 -->
+    <!-- PlatformTransactionManager接口对hibernate特定实现类，需要注入sessionFactory -->
+    <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager"
+    p:sessionFactory-ref="sessionFactory"/>
+	<!-- 事务 -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="*get" read-only="true"/>
+			<tx:method name="*"/>
+		</tx:attributes>
+	</tx:advice>
+	<aop:config>
+		<!-- 配置一个切入点 -->
+		<aop:pointcut expression="bean(empManager)||bean(mgrManager)" id="myPointcut"/>
+		<!-- 配置事务 -->
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="myPointcut"/>
+	</aop:config>
+</beans>

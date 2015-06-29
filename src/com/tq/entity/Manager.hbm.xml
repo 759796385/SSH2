@@ -5,20 +5,21 @@
 <hibernate-mapping>
     <joined-subclass name="com.tq.entity.Manager" extends="com.tq.entity.Employee" table="MANAGER" lazy="false">
         <key>
-            <column name="ID" />
+        	<!-- 员工主键为外键，存为id列 -->
+            <column name="mgr_ID" />
         </key>
         <property name="dept" type="java.lang.String">
             <column name="DEPT" />
         </property>
         <set name="employees" table="EMPLOYEE" inverse="false" lazy="true">
             <key>
-                <column name="DEPT" />
+                <column name="mgr_ID" />
             </key>
             <one-to-many class="com.tq.entity.Employee" />
         </set>
         <set name="checks" table="CHECKBACK" inverse="false" lazy="true">
             <key>
-                <column name="DEPT" />
+                <column name="mgr_ID" />
             </key>
             <one-to-many class="com.tq.entity.CheckBack" />
         </set>

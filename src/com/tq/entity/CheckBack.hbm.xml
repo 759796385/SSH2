@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2015-6-28 21:38:07 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.tq.entity.CheckBack" table="CHECKBACK">
+        <id name="id" type="java.lang.Integer">
+            <column name="ID" />
+            <generator class="assigned" />
+        </id>
+        <property name="result" type="boolean">
+            <column name="RESULT" />
+        </property>
+        <property name="reason" type="java.lang.String">
+            <column name="REASON" />
+        </property>
+        <one-to-one name="app" class="com.tq.entity.Application" access="field"></one-to-one>
+        <many-to-one name="manager" class="com.tq.entity.Manager" access="field" fetch="join">
+            <column name="MANAGER" />
+        </many-to-one>
+    </class>
+</hibernate-mapping>

@@ -13,7 +13,7 @@ public class Attend implements Serializable {
 	private Integer id;
 	// 出勤日期
 	private String dutyDay;
-	// 打卡程序
+	// 打卡时间
 	private Date punchTime;
 	// 本次打卡是否为上班打卡
 	private boolean isCome;
